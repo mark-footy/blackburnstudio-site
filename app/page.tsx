@@ -13,9 +13,9 @@ export default function Home() {
         <img
           src={`${baseUrl}/hero.jpg`}
           alt="Blackburn Studio hero"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-[70%_center] md:object-center"
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/70 via-black/40 to-black/80 md:from-black/60 md:via-black/30 md:to-black/70" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-black via-black/40 to-transparent md:h-32" />
 
         <header className="relative z-30 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-8">
@@ -30,7 +30,7 @@ export default function Home() {
         </header>
 
         <div className="relative z-30 mx-auto flex h-[calc(85vh-72px)] w-full max-w-6xl flex-col justify-end px-6 pb-16 md:px-8 md:pb-20">
-          <h1 className="rise-in max-w-xl text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl">
+          <h1 className="rise-in mt-24 max-w-[90%] text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-5xl md:mt-0 md:max-w-xl md:text-6xl">
             Honest, cinematic photography
             <br />
             <span className="text-neutral-400">with a human edge.</span>
@@ -44,29 +44,33 @@ export default function Home() {
             work from Japan.
           </p>
           <div
-            className="rise-in mt-10 flex flex-col gap-3 sm:flex-row"
+            className="rise-in mt-8 flex w-full flex-col gap-3 md:mt-10 md:w-auto md:flex-row md:gap-4"
             style={{ animationDelay: "240ms" }}
           >
             <a
               href="#work"
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-neutral-200"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-neutral-200 md:w-auto"
             >
               View work
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-neutral-200 transition hover:border-white/40 hover:text-white"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 hover:text-white md:w-auto"
             >
               Enquire
             </a>
           </div>
         </div>
+
+        <div className="pointer-events-none absolute bottom-6 left-1/2 hidden h-6 w-px -translate-x-1/2 bg-white/25 md:block" />
       </section>
+
+      <div className="h-8 md:h-12" />
 
       {/* Work */}
       <section id="work">
         {/* Portraits */}
-        <div className="relative z-10 mx-auto -mt-8 max-w-6xl px-6 pt-16 pb-14 md:-mt-10 md:px-8">
+        <div className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
@@ -101,7 +105,7 @@ export default function Home() {
         </div>
 
         {/* Japan */}
-        <div className="mx-auto max-w-6xl px-6 pt-20 pb-16 md:px-8">
+        <div className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
@@ -117,7 +121,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-5">
+          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-5">
             {japan.map((file) => (
               <figure
                 key={file}
@@ -137,7 +141,10 @@ export default function Home() {
       </section>
 
       {/* About */}
-      <section id="about" className="mx-auto max-w-6xl px-6 py-24 md:px-8">
+      <section
+        id="about"
+        className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28"
+      >
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
             About
@@ -155,8 +162,11 @@ export default function Home() {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="mx-auto max-w-6xl px-6 py-24 md:px-8">
-        <div className="mx-auto mt-32 max-w-2xl text-center">
+      <section
+        id="contact"
+        className="mx-auto max-w-6xl px-6 pt-24 pb-28 md:px-8"
+      >
+        <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
             Contact
           </p>

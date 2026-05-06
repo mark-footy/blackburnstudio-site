@@ -30,6 +30,12 @@ const DIRECTION_LOCK = 10;
 const TAP_MOVEMENT_THRESHOLD = 8;
 const SLIDE_GAP_MOBILE = 24;
 const SLIDE_GAP_DESKTOP = 32;
+const RESISTANCE_RATIO = 0.35;
+const FREE_DRAG_RATIO = 0.6;
+const VELOCITY_THRESHOLD = 0.5; // px/ms
+const DISTANCE_RATIO = 0.2;
+const EASE_PREMIUM = "cubic-bezier(0.22, 1, 0.36, 1)";
+const EASE_SNAP = "cubic-bezier(0.22, 1.15, 0.36, 1)";
 
 function ImageCard({
   image,
@@ -82,10 +88,12 @@ function Lightbox({
   const [dragY, setDragY] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [slideGap, setSlideGap] = useState(SLIDE_GAP_MOBILE);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const animatingRef = useRef(false);
   const axisRef = useRef<Axis>("none");
   const startX = useRef(0);
   const startY = useRef(0);
+  const startTime = useRef(0);
   const movedRef = useRef(false);
   const reducedMotionRef = useRef(false);
 
@@ -95,6 +103,15 @@ function Lightbox({
     apply();
     m.addEventListener("change", apply);
     return () => m.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const measure = () => {
+      setViewportWidth(viewportRef.current?.offsetWidth ?? window.innerWidth);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   useEffect(() => {
@@ -162,9 +179,16 @@ function Lightbox({
     const t = e.touches[0];
     startX.current = t.clientX;
     startY.current = t.clientY;
+    startTime.current = performance.now();
     axisRef.current = "none";
     movedRef.current = false;
     setAnimating(false);
+  };
+
+  const applyResistance = (delta: number, width: number) => {
+    const maxFree = width * FREE_DRAG_RATIO;
+    if (Math.abs(delta) <= maxFree) return delta;
+    return Math.sign(delta) * (maxFree + (Math.abs(delta) - maxFree) * RESISTANCE_RATIO);
   };
 
   const handleTouchMove = (e: ReactTouchEvent) => {
@@ -183,18 +207,26 @@ function Lightbox({
       else return;
     }
 
-    if (axisRef.current === "x") setDragX(dx);
-    else if (axisRef.current === "y") setDragY(dy);
+    if (axisRef.current === "x") {
+      const width = viewportRef.current?.offsetWidth ?? window.innerWidth;
+      setDragX(applyResistance(dx, width));
+    } else if (axisRef.current === "y") {
+      setDragY(dy);
+    }
   };
 
   const handleTouchEnd = (e: ReactTouchEvent) => {
     if (animatingRef.current) return;
     const width = viewportRef.current?.offsetWidth ?? window.innerWidth;
-    const swipeThreshold = Math.max(50, width * 0.2);
+    const distanceThreshold = Math.max(50, width * DISTANCE_RATIO);
+    const elapsed = Math.max(1, performance.now() - startTime.current);
 
     if (axisRef.current === "x") {
-      if (dragX <= -swipeThreshold) goTo(nextIndex);
-      else if (dragX >= swipeThreshold) goTo(prevIndex);
+      const velocity = dragX / elapsed; // px/ms (signed)
+      const fastLeft = velocity <= -VELOCITY_THRESHOLD;
+      const fastRight = velocity >= VELOCITY_THRESHOLD;
+      if (dragX <= -distanceThreshold || fastLeft) goTo(nextIndex);
+      else if (dragX >= distanceThreshold || fastRight) goTo(prevIndex);
       else {
         setAnimating(true);
         setDragX(0);
@@ -224,6 +256,15 @@ function Lightbox({
 
   // backdrop opacity reduces during vertical close drag
   const closeProgress = Math.min(Math.abs(dragY) / 300, 0.6);
+  // tactile feedback: scale + opacity falloff during vertical close drag
+  const verticalCloseProgress = Math.min(Math.abs(dragY) / 140, 1);
+  const verticalScale = 1 - verticalCloseProgress * 0.08;
+  const verticalOpacity = 1 - verticalCloseProgress * 0.5;
+
+  // horizontal drag progress (0–1) for active-image scale
+  const dragProgress =
+    viewportWidth > 0 ? Math.min(Math.abs(dragX) / viewportWidth, 1) : 0;
+  const activeScale = 1 - dragProgress * 0.05;
 
   const slides: { img: PortraitImage; offset: number }[] = [
     { img: images[prevIndex], offset: -1 },
@@ -231,9 +272,7 @@ function Lightbox({
     { img: images[nextIndex], offset: 1 },
   ];
 
-  const transitionClass = animating
-    ? "transition-transform duration-[260ms] ease-out"
-    : "";
+  const transitionClass = "";
 
   return (
     <div
@@ -318,29 +357,50 @@ function Lightbox({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          transform: `translateY(${dragY}px) scale(${closing ? 0.98 : 1})`,
-          opacity: closing ? 0 : 1,
+          transform: `translateY(${dragY}px) scale(${closing ? 0.98 : verticalScale})`,
+          opacity: closing ? 0 : verticalOpacity,
           transition: closing
-            ? "transform 220ms ease-out, opacity 220ms ease-out"
+            ? `transform 220ms ${EASE_PREMIUM}, opacity 220ms ${EASE_PREMIUM}`
             : animating
-              ? "transform 260ms ease-out"
+              ? `transform 260ms ${EASE_PREMIUM}, opacity 260ms ${EASE_PREMIUM}`
               : undefined,
         }}
         className="relative z-10 h-[84vh] w-[92vw] max-w-[92vw] overflow-hidden touch-pan-y select-none motion-safe:animate-lightbox-in"
       >
         <div
-          style={{ transform: `translate3d(${dragX}px, 0, 0)` }}
+          style={{
+            transform: `translate3d(${dragX}px, 0, 0)`,
+            transition: animating
+              ? `transform 260ms ${EASE_SNAP}`
+              : undefined,
+          }}
           className={`flex h-full w-full ${transitionClass}`}
         >
-          {slides.map(({ img, offset }) => (
-            <div
-              key={`${img.id}-${offset}`}
-              style={{
-                transform: `translateX(calc(${offset * 100}% + ${offset * slideGap}px))`,
-                left: 0,
-              }}
-              className="absolute inset-0 flex h-full w-full items-center justify-center"
-            >
+          {slides.map(({ img, offset }) => {
+            const isActive = offset === 0;
+            // Side images dim baseline; incoming side image lifts toward 1 during drag.
+            const incomingSign = dragX < 0 ? 1 : dragX > 0 ? -1 : 0;
+            const isIncoming = !isActive && offset === incomingSign;
+            const sideBase = 0.65;
+            const sideOpacity = isIncoming
+              ? sideBase + (1 - sideBase) * dragProgress
+              : isActive
+                ? 1
+                : sideBase;
+            const slideScale = isActive ? activeScale : 1;
+            return (
+              <div
+                key={`${img.id}-${offset}`}
+                style={{
+                  transform: `translateX(calc(${offset * 100}% + ${offset * slideGap}px)) scale(${slideScale})`,
+                  opacity: sideOpacity,
+                  left: 0,
+                  transition: animating
+                    ? `transform 260ms ${EASE_PREMIUM}, opacity 260ms ${EASE_PREMIUM}`
+                    : undefined,
+                }}
+                className="absolute inset-0 flex h-full w-full items-center justify-center"
+              >
               <div className="relative h-full w-full">
                 <Image
                   src={img.src}
@@ -353,7 +413,8 @@ function Lightbox({
                 />
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

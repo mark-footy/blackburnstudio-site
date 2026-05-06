@@ -2,14 +2,14 @@
 
 import { useCallback, useState } from "react";
 
-import { GalleryImageCard } from "../../../components/gallery/GalleryImageCard";
-import { Lightbox } from "../../../components/gallery/lightbox/Lightbox";
-import { MORPH_DURATION } from "../../../components/gallery/lightbox/constants";
-import type {
-  GalleryImage,
-  MorphOrigin,
-  MorphPhase,
-} from "../../../components/gallery/types";
+import {
+  GalleryImageCard,
+  Lightbox,
+  MORPH_DURATION,
+  type GalleryImage,
+  type MorphOrigin,
+  type MorphPhase,
+} from "@/components/gallery";
 
 // Keep PortraitImage exported for back-compat with the server data layer.
 export type PortraitImage = GalleryImage;

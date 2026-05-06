@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { EASE_MORPH, EASE_PREMIUM, MORPH_DURATION } from "./constants";
-import type { GalleryImage, MorphOrigin, MorphPhase } from "../types";
+import { EASE_MORPH, EASE_PREMIUM, MORPH_DURATION } from "@/components/gallery/lightbox/constants";
+import type { GalleryImage, MorphOrigin, MorphPhase } from "@/components/gallery/types";
 
 function computeCenteredRect() {
   const vw = window.innerWidth;

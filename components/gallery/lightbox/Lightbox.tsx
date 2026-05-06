@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from "react";
 
-import { CarouselTrack } from "./CarouselTrack";
-import { LightboxControls } from "./LightboxControls";
-import { MorphOverlay } from "./MorphOverlay";
-import { EASE_PREMIUM, MORPH_DURATION } from "./constants";
-import { useLightboxGestures } from "./useLightboxGestures";
-import { useScrollLock } from "./useScrollLock";
-import type { GalleryImage, MorphOrigin, MorphPhase } from "../types";
+import { CarouselTrack } from "@/components/gallery/lightbox/CarouselTrack";
+import { LightboxControls } from "@/components/gallery/lightbox/LightboxControls";
+import { MorphOverlay } from "@/components/gallery/lightbox/MorphOverlay";
+import { EASE_PREMIUM, MORPH_DURATION } from "@/components/gallery/lightbox/constants";
+import { useLightboxGestures } from "@/components/gallery/lightbox/useLightboxGestures";
+import { useScrollLock } from "@/components/gallery/lightbox/useScrollLock";
+import type { GalleryImage, MorphOrigin, MorphPhase } from "@/components/gallery/types";
 
 type LightboxProps = {
   images: GalleryImage[];

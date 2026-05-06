@@ -3,8 +3,8 @@
 import Image from "next/image";
 import type { RefObject, TouchEvent as ReactTouchEvent } from "react";
 
-import { EASE_PREMIUM, EASE_SNAP } from "./constants";
-import type { GalleryImage, MorphPhase } from "../types";
+import { EASE_PREMIUM, EASE_SNAP } from "@/components/gallery/lightbox/constants";
+import type { GalleryImage, MorphPhase } from "@/components/gallery/types";
 
 type CarouselTrackProps = {
   images: GalleryImage[];

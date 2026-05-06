@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 
-import type { GalleryImage, MorphOrigin } from "./types";
+import type { GalleryImage, MorphOrigin } from "@/components/gallery/types";
 
 type GalleryImageCardProps = {
   image: GalleryImage;

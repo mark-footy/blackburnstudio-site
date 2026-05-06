@@ -20,8 +20,8 @@ import {
   TAP_MOVEMENT_THRESHOLD,
   VELOCITY_THRESHOLD,
   VERTICAL_CLOSE_VELOCITY,
-} from "./constants";
-import type { Axis } from "../types";
+} from "@/components/gallery/lightbox/constants";
+import type { Axis } from "@/components/gallery/types";
 
 type UseLightboxGesturesArgs = {
   viewportRef: RefObject<HTMLDivElement | null>;

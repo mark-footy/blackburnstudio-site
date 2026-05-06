@@ -27,6 +27,9 @@ const images: PortraitImage[] = [
 
 const CLOSE_THRESHOLD = 100;
 const DIRECTION_LOCK = 10;
+const TAP_MOVEMENT_THRESHOLD = 8;
+const SLIDE_GAP_MOBILE = 24;
+const SLIDE_GAP_DESKTOP = 32;
 
 function ImageCard({
   image,
@@ -78,11 +81,21 @@ function Lightbox({
   const [dragX, setDragX] = useState(0);
   const [dragY, setDragY] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [slideGap, setSlideGap] = useState(SLIDE_GAP_MOBILE);
   const animatingRef = useRef(false);
   const axisRef = useRef<Axis>("none");
   const startX = useRef(0);
   const startY = useRef(0);
+  const movedRef = useRef(false);
   const reducedMotionRef = useRef(false);
+
+  useEffect(() => {
+    const m = window.matchMedia("(min-width: 768px)");
+    const apply = () => setSlideGap(m.matches ? SLIDE_GAP_DESKTOP : SLIDE_GAP_MOBILE);
+    apply();
+    m.addEventListener("change", apply);
+    return () => m.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     const m = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -133,7 +146,7 @@ function Lightbox({
       }
       animatingRef.current = true;
       setAnimating(true);
-      setDragX(direction * width);
+      setDragX(direction * (width + slideGap));
       window.setTimeout(() => {
         setIndex(target);
         setAnimating(false);
@@ -141,7 +154,7 @@ function Lightbox({
         setDragX(0);
       }, 260);
     },
-    [nextIndex, prevIndex, setIndex],
+    [nextIndex, prevIndex, setIndex, slideGap],
   );
 
   const handleTouchStart = (e: ReactTouchEvent) => {
@@ -150,6 +163,7 @@ function Lightbox({
     startX.current = t.clientX;
     startY.current = t.clientY;
     axisRef.current = "none";
+    movedRef.current = false;
     setAnimating(false);
   };
 
@@ -158,6 +172,10 @@ function Lightbox({
     const t = e.touches[0];
     const dx = t.clientX - startX.current;
     const dy = t.clientY - startY.current;
+
+    if (Math.abs(dx) > TAP_MOVEMENT_THRESHOLD || Math.abs(dy) > TAP_MOVEMENT_THRESHOLD) {
+      movedRef.current = true;
+    }
 
     if (axisRef.current === "none") {
       if (Math.abs(dx) > Math.abs(dy) + DIRECTION_LOCK) axisRef.current = "x";
@@ -169,7 +187,7 @@ function Lightbox({
     else if (axisRef.current === "y") setDragY(dy);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: ReactTouchEvent) => {
     if (animatingRef.current) return;
     const width = viewportRef.current?.offsetWidth ?? window.innerWidth;
     const swipeThreshold = Math.max(50, width * 0.2);
@@ -190,8 +208,18 @@ function Lightbox({
         setDragY(0);
         window.setTimeout(() => setAnimating(false), 260);
       }
+    } else if (!movedRef.current) {
+      // Treat as tap: forgiving mobile zones (left 40% / right 40%)
+      const rect = viewportRef.current?.getBoundingClientRect();
+      const t = e.changedTouches[0];
+      if (rect && t) {
+        const xRel = (t.clientX - rect.left) / rect.width;
+        if (xRel <= 0.4) goTo(prevIndex);
+        else if (xRel >= 0.6) goTo(nextIndex);
+      }
     }
     axisRef.current = "none";
+    movedRef.current = false;
   };
 
   // backdrop opacity reduces during vertical close drag
@@ -263,7 +291,7 @@ function Lightbox({
         {index + 1} / {total}
       </p>
 
-      {/* Mobile tap zones (left/right thirds = prev/next; centre untouched) */}
+      {/* Mobile tap zones — sit behind viewport (z-0); viewport handles in-image taps */}
       <button
         type="button"
         aria-label="Previous image"
@@ -271,7 +299,7 @@ function Lightbox({
           e.stopPropagation();
           goTo(prevIndex);
         }}
-        className="absolute left-0 top-0 z-0 h-full w-1/3 cursor-default md:hidden"
+        className="absolute inset-y-0 left-0 z-0 w-[40vw] cursor-default md:hidden"
       />
       <button
         type="button"
@@ -280,7 +308,7 @@ function Lightbox({
           e.stopPropagation();
           goTo(nextIndex);
         }}
-        className="absolute right-0 top-0 z-0 h-full w-1/3 cursor-default md:hidden"
+        className="absolute inset-y-0 right-0 z-0 w-[40vw] cursor-default md:hidden"
       />
 
       <div
@@ -308,7 +336,7 @@ function Lightbox({
             <div
               key={`${img.id}-${offset}`}
               style={{
-                transform: `translateX(${offset * 100}%)`,
+                transform: `translateX(calc(${offset * 100}% + ${offset * slideGap}px))`,
                 left: 0,
               }}
               className="absolute inset-0 flex h-full w-full items-center justify-center"

@@ -32,10 +32,10 @@ const SLIDE_GAP_MOBILE = 24;
 const SLIDE_GAP_DESKTOP = 32;
 const RESISTANCE_RATIO = 0.35;
 const FREE_DRAG_RATIO = 0.6;
-const VELOCITY_THRESHOLD = 0.5; // px/ms
+const VELOCITY_THRESHOLD = 0.4; // px/ms
 const DISTANCE_RATIO = 0.2;
 const EASE_PREMIUM = "cubic-bezier(0.22, 1, 0.36, 1)";
-const EASE_SNAP = "cubic-bezier(0.22, 1.15, 0.36, 1)";
+const EASE_SNAP = "cubic-bezier(0.22, 1.08, 0.36, 1)";
 
 function ImageCard({
   image,
@@ -186,9 +186,12 @@ function Lightbox({
   };
 
   const applyResistance = (delta: number, width: number) => {
-    const maxFree = width * FREE_DRAG_RATIO;
-    if (Math.abs(delta) <= maxFree) return delta;
-    return Math.sign(delta) * (maxFree + (Math.abs(delta) - maxFree) * RESISTANCE_RATIO);
+    const freeLimit = width * FREE_DRAG_RATIO;
+    if (Math.abs(delta) <= freeLimit) return delta;
+    const excess = Math.abs(delta) - freeLimit;
+    const easedExcess =
+      excess * RESISTANCE_RATIO * (1 - Math.exp(-excess / 120));
+    return Math.sign(delta) * (freeLimit + easedExcess);
   };
 
   const handleTouchMove = (e: ReactTouchEvent) => {
@@ -211,6 +214,8 @@ function Lightbox({
       const width = viewportRef.current?.offsetWidth ?? window.innerWidth;
       setDragX(applyResistance(dx, width));
     } else if (axisRef.current === "y") {
+      // Reduce horizontal drift while vertical close gesture is active
+      setDragX(dx * 0.15);
       setDragY(dy);
     }
   };
@@ -228,16 +233,21 @@ function Lightbox({
       if (dragX <= -distanceThreshold || fastLeft) goTo(nextIndex);
       else if (dragX >= distanceThreshold || fastRight) goTo(prevIndex);
       else {
-        setAnimating(true);
-        setDragX(0);
+        requestAnimationFrame(() => {
+          setAnimating(true);
+          setDragX(0);
+        });
         window.setTimeout(() => setAnimating(false), 260);
       }
     } else if (axisRef.current === "y") {
       if (Math.abs(dragY) >= CLOSE_THRESHOLD) {
         onClose();
       } else {
-        setAnimating(true);
-        setDragY(0);
+        requestAnimationFrame(() => {
+          setAnimating(true);
+          setDragX(0);
+          setDragY(0);
+        });
         window.setTimeout(() => setAnimating(false), 260);
       }
     } else if (!movedRef.current) {
@@ -264,7 +274,8 @@ function Lightbox({
   // horizontal drag progress (0–1) for active-image scale
   const dragProgress =
     viewportWidth > 0 ? Math.min(Math.abs(dragX) / viewportWidth, 1) : 0;
-  const activeScale = 1 - dragProgress * 0.05;
+  const easedDragProgress = 1 - Math.pow(1 - dragProgress, 2);
+  const activeScale = 1 - easedDragProgress * 0.05;
 
   const slides: { img: PortraitImage; offset: number }[] = [
     { img: images[prevIndex], offset: -1 },
@@ -383,7 +394,7 @@ function Lightbox({
             const isIncoming = !isActive && offset === incomingSign;
             const sideBase = 0.65;
             const sideOpacity = isIncoming
-              ? sideBase + (1 - sideBase) * dragProgress
+              ? sideBase + (1 - sideBase) * Math.pow(dragProgress, 1.4)
               : isActive
                 ? 1
                 : sideBase;

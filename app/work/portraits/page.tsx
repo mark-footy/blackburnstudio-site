@@ -1,11 +1,13 @@
 import Link from "next/link";
 import PortraitsGrid from "./PortraitsGrid";
+import { getImagesWithBlur } from "../../../lib/getImagesWithBlur";
 
 export const metadata = {
   title: "Portraits — Blackburn Studio",
 };
 
-export default function PortraitsPage() {
+export default async function PortraitsPage() {
+  const images = await getImagesWithBlur();
   return (
     <div className="flex min-h-screen flex-col bg-black text-neutral-300">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-8">
@@ -46,7 +48,7 @@ export default function PortraitsPage() {
           </div>
 
           <div className="mt-12 md:mt-16">
-            <PortraitsGrid />
+            <PortraitsGrid images={images} />
           </div>
         </section>
 

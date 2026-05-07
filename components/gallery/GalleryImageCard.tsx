@@ -9,12 +9,19 @@ type GalleryImageCardProps = {
   image: GalleryImage;
   onOpen: (origin: MorphOrigin) => void;
   className?: string;
+  /**
+   * Tailwind aspect-ratio class for the card frame.
+   * Defaults to `aspect-4/5` to preserve the existing Portraits language.
+   * Pass e.g. `aspect-3/2` for landscape cards in mixed-orientation series.
+   */
+  aspectClassName?: string;
 };
 
 export function GalleryImageCard({
   image,
   onOpen,
   className = "",
+  aspectClassName = "aspect-4/5",
 }: GalleryImageCardProps) {
   const ref = useRef<HTMLButtonElement | null>(null);
   return (
@@ -29,7 +36,7 @@ export function GalleryImageCard({
         onOpen({ rect, borderRadius });
       }}
       aria-label={`Open ${image.alt}`}
-      className={`group relative block aspect-4/5 w-full cursor-pointer overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 ${className}`}
+      className={`group relative block ${aspectClassName} w-full cursor-pointer overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 ${className}`}
     >
       <Image
         src={image.src}

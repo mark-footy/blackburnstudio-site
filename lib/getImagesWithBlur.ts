@@ -3,20 +3,18 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { getPlaiceholder } from "plaiceholder";
 
-export type PortraitImage = {
-  id: number;
-  src: string;
-  alt: string;
-  blurDataURL: string;
-};
+import type { GalleryImage, Orientation } from "@/components/gallery/types";
 
-type PortraitSource = {
+// Re-exported for back-compat with existing imports.
+export type PortraitImage = GalleryImage;
+
+export type ImageSource = {
   id: number;
   file: string;
   alt: string;
 };
 
-const sources: PortraitSource[] = [
+const portraitSources: ImageSource[] = [
   { id: 1, file: "hero.jpg", alt: "Portrait in soft natural light" },
   { id: 2, file: "candid.jpg", alt: "Candid portrait with natural expression" },
   { id: 4, file: "male.jpg", alt: "Portrait in soft directional light" },
@@ -26,17 +24,30 @@ const sources: PortraitSource[] = [
   { id: 5, file: "moody.jpg", alt: "Portrait with subtle shadow and contrast" },
 ];
 
-export async function getImagesWithBlur(): Promise<PortraitImage[]> {
-  const dir = path.join(process.cwd(), "public", "portraits");
+function deriveOrientation(width?: number, height?: number): Orientation | undefined {
+  if (!width || !height) return undefined;
+  if (width > height) return "landscape";
+  if (height > width) return "portrait";
+  return "square";
+}
+
+export async function getImagesWithBlur(
+  folder: string = "portraits",
+  imageSources: ImageSource[] = portraitSources,
+): Promise<GalleryImage[]> {
+  const dir = path.join(process.cwd(), "public", folder);
   return Promise.all(
-    sources.map(async ({ id, file, alt }) => {
+    imageSources.map(async ({ id, file, alt }) => {
       const buffer = await fs.readFile(path.join(dir, file));
-      const { base64 } = await getPlaiceholder(buffer);
+      const { base64, metadata } = await getPlaiceholder(buffer);
       return {
         id,
-        src: `/portraits/${file}`,
+        src: `/${folder}/${file}`,
         alt,
         blurDataURL: base64,
+        width: metadata?.width,
+        height: metadata?.height,
+        orientation: deriveOrientation(metadata?.width, metadata?.height),
       };
     }),
   );

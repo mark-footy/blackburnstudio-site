@@ -72,18 +72,21 @@ export default function FamiliesGrid({ images }: { images: GalleryImage[] }) {
           />
         </div>
 
-        {/* 4 + 5 — structured portraiture pair */}
-        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-8">
-          <GalleryImageCard
-            image={images[3]}
-            onOpen={(o) => open(3, o)}
-            aspectClassName={PORTRAIT}
-          />
-          <GalleryImageCard
-            image={images[4]}
-            onOpen={(o) => open(4, o)}
-            aspectClassName={PORTRAIT}
-          />
+        {/* 4 + 5 — structured portraiture pair, narrowed and centred so two
+            aspect-4/5 cards don't dominate the page rhythm */}
+        <div className="mx-auto w-full md:max-w-4xl">
+          <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-8">
+            <GalleryImageCard
+              image={images[3]}
+              onOpen={(o) => open(3, o)}
+              aspectClassName={PORTRAIT}
+            />
+            <GalleryImageCard
+              image={images[4]}
+              onOpen={(o) => open(4, o)}
+              aspectClassName={PORTRAIT}
+            />
+          </div>
         </div>
 
         {/* 6 — storytelling breath, full-width */}

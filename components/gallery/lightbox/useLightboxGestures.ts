@@ -98,6 +98,30 @@ export function useLightboxGestures({
     return () => m.removeEventListener("change", handler);
   }, []);
 
+  // Native non-passive touchmove on the gesture surface only.
+  // React's synthetic touchmove can be passive, which means preventDefault()
+  // would not reliably stop browser-native panning. We attach a minimal
+  // listener directly to the viewport element so that — once the gesture has
+  // committed to an axis — the browser stops competing with the custom
+  // gesture system. State updates remain handled by the React onTouchMove.
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const onNativeTouchMove = (e: TouchEvent) => {
+      if (axisRef.current === "none") return;
+      if (e.cancelable) e.preventDefault();
+    };
+    el.addEventListener("touchmove", onNativeTouchMove, { passive: false });
+    return () => {
+      el.removeEventListener(
+        "touchmove",
+        onNativeTouchMove,
+        // listener options are matched by `capture` only, but pass for clarity
+        { passive: false } as EventListenerOptions,
+      );
+    };
+  }, [viewportRef]);
+
   const goTo = useCallback(
     (target: number) => {
       if (animatingRef.current) return;

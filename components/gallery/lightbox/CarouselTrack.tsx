@@ -82,7 +82,7 @@ export function CarouselTrack({
               : undefined,
         pointerEvents: morphPhase === "open" ? undefined : "none",
       }}
-      className="relative z-10 h-[84vh] w-[92vw] max-w-[92vw] overflow-hidden bg-black touch-pan-y select-none"
+      className="relative z-10 h-[84vh] w-[92vw] max-w-[92vw] overflow-hidden bg-black touch-none select-none"
     >
       <div
         style={{

@@ -143,7 +143,7 @@ export default async function Home() {
       {/* Japan — contemplative extension of the studio's worldview.
           Quieter than Portraits: narrower container, intrinsic aspect ratios,
           asymmetry inherited from the photographs themselves. */}
-      <section className="mx-auto max-w-5xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
+      <section className="mx-auto max-w-4xl px-6 pt-16 pb-28 md:px-8 md:pt-24 md:pb-40">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
@@ -164,8 +164,8 @@ export default async function Home() {
             them room. Intrinsic aspect ratios throughout. */}
         <div className="mt-10 flex flex-col gap-8 md:gap-10">
           <Link
-            href="/work/japan"
-            aria-label="View Japan series"
+            href="/work"
+            aria-label="View selected work"
             className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
             style={
               japanLead.width && japanLead.height
@@ -179,17 +179,20 @@ export default async function Home() {
               fill
               placeholder="blur"
               blurDataURL={japanLead.blurDataURL}
-              sizes="(min-width: 768px) 64rem, 100vw"
+              sizes="(min-width: 768px) 56rem, 100vw"
               className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
             />
           </Link>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-6 md:gap-8">
-            {japanSupports.map((img) => (
+            {japanSupports.map((img, i) => (
               <Link
                 key={img.id}
-                href="/work/japan"
-                aria-label="View Japan series"
-                className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
+                href="/work"
+                aria-label="View selected work"
+                className={
+                  "group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 " +
+                  (i === 1 ? "sm:w-[88%] sm:justify-self-center" : "")
+                }
                 style={
                   img.width && img.height
                     ? { aspectRatio: `${img.width} / ${img.height}` }

@@ -159,14 +159,14 @@ export default async function Home() {
           </p>
         </div>
 
-        {/* Right column drifts: vertically centred against the lead, with an
-            unequal internal gap and a quieter footprint for japan-03 so it
-            reads as punctuation rather than a second hero. */}
-        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12 md:items-center md:gap-6">
+        {/* Establishing landscape on top, two portrait supports beneath.
+            The photographs carry their own rhythm \u2014 the layout just gives
+            them room. Intrinsic aspect ratios throughout. */}
+        <div className="mt-10 flex flex-col gap-8 md:gap-10">
           <Link
             href="/work/japan"
             aria-label="View Japan series"
-            className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 md:col-span-7"
+            className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
             style={
               japanLead.width && japanLead.height
                 ? { aspectRatio: `${japanLead.width} / ${japanLead.height}` }
@@ -179,20 +179,17 @@ export default async function Home() {
               fill
               placeholder="blur"
               blurDataURL={japanLead.blurDataURL}
-              sizes="(min-width: 768px) 58vw, 100vw"
+              sizes="(min-width: 768px) 64rem, 100vw"
               className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
             />
           </Link>
-          <div className="flex flex-col gap-8 md:col-span-5 md:gap-10">
-            {japanSupports.map((img, i) => (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-6 md:gap-8">
+            {japanSupports.map((img) => (
               <Link
                 key={img.id}
                 href="/work/japan"
                 aria-label="View Japan series"
-                className={
-                  "group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 " +
-                  (i === 1 ? "md:ml-0 md:mr-auto md:w-[86%]" : "")
-                }
+                className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
                 style={
                   img.width && img.height
                     ? { aspectRatio: `${img.width} / ${img.height}` }
@@ -205,7 +202,7 @@ export default async function Home() {
                   fill
                   placeholder="blur"
                   blurDataURL={img.blurDataURL}
-                  sizes="(min-width: 768px) 42vw, 100vw"
+                  sizes="(min-width: 640px) 32rem, 100vw"
                   className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
                 />
               </Link>

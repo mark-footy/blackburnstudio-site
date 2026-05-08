@@ -7,22 +7,16 @@ const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "/images";
 
 const portraits = ["portrait-01.jpg", "portrait-02.jpg", "portrait-03.jpg"];
 
-// Japan homepage trio — composed for cinematic asymmetry.
-// Dominant first, then two quieter supports. Aspect ratios are read from the
-// source files so nothing is cropped against its will.
+// Original curated homepage trio. Asymmetry is intrinsic to the photographs
+// themselves — we read their native dimensions and let them define the rhythm.
 const japanSources: ImageSource[] = [
-  { id: 1, file: "garden-reflection.jpg", alt: "Still water reflecting a Japanese garden" },
-  { id: 2, file: "bridge-reflection.jpg", alt: "A bridge mirrored in calm water" },
-  { id: 3, file: "red-doorway.jpg", alt: "A weathered red doorway, Japan" },
-];
-
-const closingStripSource: ImageSource[] = [
-  { id: 99, file: "black-texture.jpg", alt: "" },
+  { id: 1, file: "japan-01.jpg", alt: "Japan landscape by Blackburn Studio" },
+  { id: 2, file: "japan-02.jpg", alt: "Japan landscape by Blackburn Studio" },
+  { id: 3, file: "japan-03.jpg", alt: "Japan landscape by Blackburn Studio" },
 ];
 
 export default async function Home() {
-  const japanImages = await getImagesWithBlur("japan", japanSources);
-  const [closingImage] = await getImagesWithBlur("japan", closingStripSource);
+  const japanImages = await getImagesWithBlur("images", japanSources);
   const [japanLead, ...japanSupports] = japanImages;
   return (
     <div className="bg-black text-neutral-300">
@@ -147,9 +141,9 @@ export default async function Home() {
       </section>
 
       {/* Japan — contemplative extension of the studio's worldview.
-          Asymmetric editorial weighting, but each frame keeps its native
-          aspect ratio so the photography is never cropped against itself. */}
-      <section className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
+          Quieter than Portraits: narrower container, intrinsic aspect ratios,
+          asymmetry inherited from the photographs themselves. */}
+      <section className="mx-auto max-w-5xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
@@ -238,24 +232,6 @@ export default async function Home() {
           </a>
         </div>
       </section>
-
-      {/* Closing exhale — abstract atmospheric texture, not a recognisable photo.
-          Letterbox crop, low opacity, fade to black at both edges. Felt, not noticed. */}
-      <div className="relative mt-20 h-32 w-full overflow-hidden md:mt-28 md:h-44">
-        <Image
-          src={closingImage.src}
-          alt=""
-          aria-hidden="true"
-          fill
-          placeholder="blur"
-          blurDataURL={closingImage.blurDataURL}
-          sizes="100vw"
-          className="scale-105 object-cover object-center opacity-40"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent md:w-40" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent md:w-40" />
-      </div>
 
       <footer className="mx-auto w-full max-w-6xl px-6 py-10 md:px-8">
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-neutral-500 md:flex-row">

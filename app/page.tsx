@@ -159,7 +159,10 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start md:gap-6">
+        {/* Right column drifts: vertically centred against the lead, with an
+            unequal internal gap and a quieter footprint for japan-03 so it
+            reads as punctuation rather than a second hero. */}
+        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12 md:items-center md:gap-6">
           <Link
             href="/work/japan"
             aria-label="View Japan series"
@@ -180,13 +183,16 @@ export default async function Home() {
               className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
             />
           </Link>
-          <div className="flex flex-col gap-8 md:col-span-5 md:gap-6">
-            {japanSupports.map((img) => (
+          <div className="flex flex-col gap-8 md:col-span-5 md:gap-10">
+            {japanSupports.map((img, i) => (
               <Link
                 key={img.id}
                 href="/work/japan"
                 aria-label="View Japan series"
-                className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
+                className={
+                  "group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 " +
+                  (i === 1 ? "md:ml-0 md:mr-auto md:w-[86%]" : "")
+                }
                 style={
                   img.width && img.height
                     ? { aspectRatio: `${img.width} / ${img.height}` }

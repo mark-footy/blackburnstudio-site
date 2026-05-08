@@ -52,9 +52,9 @@ export default function CouplesGrid({ images }: { images: GalleryImage[] }) {
           intrinsicAspect
         />
 
-        {/* 2 — intimate observational pause, narrower centred portrait */}
+        {/* 2 — intimate observational pause, centred portrait with more presence */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
-          <div className="md:col-span-6 md:col-start-4">
+          <div className="md:col-span-8 md:col-start-3">
             <GalleryImageCard
               image={images[1]}
               onOpen={(o) => open(1, o)}
@@ -63,9 +63,10 @@ export default function CouplesGrid({ images }: { images: GalleryImage[] }) {
           </div>
         </div>
 
-        {/* 3 — quiet presence, medium-width centred landscape, breathes alone */}
+        {/* 3 — quiet presence, slightly narrower centred landscape so it reads
+            as a quieter supporting portrait, not competing with the dog image */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
-          <div className="md:col-span-8 md:col-start-3">
+          <div className="md:col-span-7 md:col-start-4">
             <GalleryImageCard
               image={images[2]}
               onOpen={(o) => open(2, o)}

@@ -191,7 +191,10 @@ export default async function Home() {
                 aria-label="View selected work"
                 className={
                   "group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 " +
-                  (i === 1 ? "sm:w-[88%] sm:justify-self-center" : "")
+                  // Quiet editorial drift on the right-hand image: slightly
+                  // narrower, anchored to the inner edge, and nudged downward
+                  // so the two supports share no aligned edge or baseline.
+                  (i === 1 ? "sm:w-[82%] sm:justify-self-end sm:mt-6 md:mt-10" : "")
                 }
                 style={
                   img.width && img.height

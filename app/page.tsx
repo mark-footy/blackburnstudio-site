@@ -41,14 +41,17 @@ export default async function Home() {
           </nav>
         </header>
 
-        <div className="relative z-30 mx-auto flex h-[calc(85vh-72px)] w-full max-w-6xl flex-col justify-end px-6 pb-16 md:px-8 md:pb-20">
-          <h1 className="rise-in mt-24 max-w-[90%] text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-5xl md:mt-0 md:max-w-xl md:text-6xl">
+        {/* `[@media(max-height:760px)]:` refinements target shorter mobile
+            heights only (iPhone SE / 12 Pro class). Larger phones, tablets,
+            and desktop are untouched. */}
+        <div className="relative z-30 mx-auto flex h-[calc(85vh-72px)] w-full max-w-6xl flex-col justify-end px-6 pb-16 [@media(max-height:760px)]:pb-8 md:px-8 md:pb-20">
+          <h1 className="rise-in mt-24 max-w-[90%] text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-5xl [@media(max-height:760px)]:mt-12 md:mt-0 md:max-w-xl md:text-6xl">
             Honest, cinematic photography
             <br />
             <span className="text-neutral-400">with a human edge.</span>
           </h1>
           <p
-            className="rise-in mt-6 max-w-xl text-sm leading-relaxed text-neutral-400 md:text-base"
+            className="rise-in mt-6 max-w-xl text-sm leading-relaxed text-neutral-400 [@media(max-height:760px)]:mt-4 md:text-base"
             style={{ animationDelay: "120ms" }}
           >
             Blackburn Studio focuses on portrait photography with a natural,
@@ -56,18 +59,18 @@ export default async function Home() {
             work from Japan.
           </p>
           <div
-            className="rise-in mt-8 flex w-full flex-col gap-3 md:mt-10 md:w-auto md:flex-row md:gap-4"
+            className="rise-in mt-8 flex w-full flex-col gap-3 [@media(max-height:760px)]:mt-5 [@media(max-height:760px)]:gap-2 md:mt-10 md:w-auto md:flex-row md:gap-4"
             style={{ animationDelay: "240ms" }}
           >
             <a
               href="#work"
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-neutral-200 md:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-neutral-200 [@media(max-height:760px)]:min-h-11 md:w-auto"
             >
               View work
             </a>
             <a
               href="#contact"
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 hover:text-white md:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 hover:text-white [@media(max-height:760px)]:min-h-11 md:w-auto"
             >
               Enquire
             </a>

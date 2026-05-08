@@ -1,12 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { getImagesWithBlur, type ImageSource } from "@/lib/getImagesWithBlur";
+
 const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "/images";
 
 const portraits = ["portrait-01.jpg", "portrait-02.jpg", "portrait-03.jpg"];
-const japan = ["japan-01.jpg", "japan-02.jpg", "japan-03.jpg"];
 
-export default function Home() {
+// Japan homepage trio — composed for cinematic asymmetry.
+// Dominant first, then two quieter supports. Aspect ratios are read from the
+// source files so nothing is cropped against its will.
+const japanSources: ImageSource[] = [
+  { id: 1, file: "garden-reflection.jpg", alt: "Still water reflecting a Japanese garden" },
+  { id: 2, file: "bridge-reflection.jpg", alt: "A bridge mirrored in calm water" },
+  { id: 3, file: "red-doorway.jpg", alt: "A weathered red doorway, Japan" },
+];
+
+const closingStripSource: ImageSource[] = [
+  { id: 99, file: "black-texture.jpg", alt: "" },
+];
+
+export default async function Home() {
+  const japanImages = await getImagesWithBlur("japan", japanSources);
+  const [closingImage] = await getImagesWithBlur("japan", closingStripSource);
+  const [japanLead, ...japanSupports] = japanImages;
   return (
     <div className="bg-black text-neutral-300">
       {/* Hero */}
@@ -105,61 +122,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Japan */}
-        <div className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
-                Series
-              </p>
-              <h2 className="mt-3 text-3xl font-medium tracking-tight text-white md:text-4xl">
-                Japan
-              </h2>
-            </div>
-            <p className="max-w-sm text-sm leading-relaxed text-neutral-400 md:ml-auto md:text-base">
-              A curated landscape series — stillness, scale, and the soft
-              geometry of a country observed slowly.
-            </p>
-          </div>
-
-          {/* Asymmetric editorial weighting: one dominant frame, two quieter supports. */}
-          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-5">
-            <Link
-              href="/work"
-              aria-label="View selected work"
-              className="group relative block aspect-4/5 overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 md:col-span-7"
-            >
-              <Image
-                src={`${baseUrl}/${japan[0]}`}
-                alt="Japan landscape by Blackburn Studio"
-                fill
-                sizes="(min-width: 768px) 58vw, 100vw"
-                className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
-              />
-            </Link>
-            <div className="flex flex-col gap-8 md:col-span-5 md:gap-5">
-              {japan.slice(1).map((file) => (
-                <Link
-                  key={file}
-                  href="/work"
-                  aria-label="View selected work"
-                  className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
-                >
-                  <Image
-                    src={`${baseUrl}/${file}`}
-                    alt="Japan landscape by Blackburn Studio"
-                    fill
-                    sizes="(min-width: 768px) 42vw, 100vw"
-                    className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
-                  />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* About */}
+      {/* About — placed between Portraits and Japan to bridge
+          human connection → artistic philosophy → contemplative observation. */}
       <section
         id="about"
         className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28"
@@ -177,6 +143,74 @@ export default function Home() {
             over performance, and natural light over spectacle. The result is
             imagery that holds up — calm, considered, and unmistakably human.
           </p>
+        </div>
+      </section>
+
+      {/* Japan — contemplative extension of the studio's worldview.
+          Asymmetric editorial weighting, but each frame keeps its native
+          aspect ratio so the photography is never cropped against itself. */}
+      <section className="mx-auto max-w-6xl px-6 pt-16 pb-20 md:px-8 md:pt-24 md:pb-28">
+        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:gap-12">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
+              Series
+            </p>
+            <h2 className="mt-3 text-3xl font-medium tracking-tight text-white md:text-4xl">
+              Japan
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-neutral-400 md:ml-auto md:text-base">
+            A curated landscape series — stillness, scale, and the soft
+            geometry of a country observed slowly.
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start md:gap-6">
+          <Link
+            href="/work/japan"
+            aria-label="View Japan series"
+            className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 md:col-span-7"
+            style={
+              japanLead.width && japanLead.height
+                ? { aspectRatio: `${japanLead.width} / ${japanLead.height}` }
+                : undefined
+            }
+          >
+            <Image
+              src={japanLead.src}
+              alt={japanLead.alt}
+              fill
+              placeholder="blur"
+              blurDataURL={japanLead.blurDataURL}
+              sizes="(min-width: 768px) 58vw, 100vw"
+              className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
+            />
+          </Link>
+          <div className="flex flex-col gap-8 md:col-span-5 md:gap-6">
+            {japanSupports.map((img) => (
+              <Link
+                key={img.id}
+                href="/work/japan"
+                aria-label="View Japan series"
+                className="group relative block overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
+                style={
+                  img.width && img.height
+                    ? { aspectRatio: `${img.width} / ${img.height}` }
+                    : undefined
+                }
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  placeholder="blur"
+                  blurDataURL={img.blurDataURL}
+                  sizes="(min-width: 768px) 42vw, 100vw"
+                  className="object-cover transition duration-700 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.01]"
+                />
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -205,17 +239,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Closing exhale — a narrow atmospheric crop that lets the page breathe out before the footer. */}
-      <div className="relative mt-20 h-40 w-full overflow-hidden md:mt-28 md:h-56">
+      {/* Closing exhale — abstract atmospheric texture, not a recognisable photo.
+          Letterbox crop, low opacity, fade to black at both edges. Felt, not noticed. */}
+      <div className="relative mt-20 h-32 w-full overflow-hidden md:mt-28 md:h-44">
         <Image
-          src={`${baseUrl}/${japan[2]}`}
+          src={closingImage.src}
           alt=""
           aria-hidden="true"
           fill
+          placeholder="blur"
+          blurDataURL={closingImage.blurDataURL}
           sizes="100vw"
-          className="object-cover object-center opacity-60"
+          className="scale-105 object-cover object-center opacity-40"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-black/30 to-black" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent md:w-40" />
       </div>
 
       <footer className="mx-auto w-full max-w-6xl px-6 py-10 md:px-8">
